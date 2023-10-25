@@ -1,6 +1,9 @@
 /node_modules
 /.env
+/archive
 
 # WebStorm related folder
 .idea
 .idea/
+
+.DS_STORE
