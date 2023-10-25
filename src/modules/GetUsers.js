@@ -1,4 +1,4 @@
-import { BaseModule } from "../Models/BaseModule.js";
+import { BaseModule } from "../models/BaseModule.js";
 
 export class GetUsers extends BaseModule {
   constructor({ db }) {
