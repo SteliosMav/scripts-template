@@ -18,7 +18,7 @@ Before running the code, make sure to set up your environment and install the re
 
    ```bash
    git clone <repository-url>
-   cd module-initialization
+   cd <repo-name>
 
 2. Install dependencies:
 
