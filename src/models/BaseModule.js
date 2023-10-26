@@ -20,6 +20,10 @@ export class BaseModule {
     }
   }
 
+  /**
+   * Initializes the module.
+   * @returns {Promise<unknown>} A promise that resolves the results to be logged.
+   */
   init() {
     throw new Error("Method 'init()' is missing");
   }
