@@ -11,7 +11,7 @@ function closeConnection() {
 }
 
 async function connectToDb() {
-  await mongoClient.connect(); // Use await with an asynchronous operation
+  await mongoClient.connect();
   console.log("Connected successfully to server");
   const dbName = process.env.DB_NAME;
   return mongoClient.db(dbName);

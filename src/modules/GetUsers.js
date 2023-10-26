@@ -7,6 +7,7 @@ export class GetUsers extends BaseModule {
 
   async init() {
     const collection = this.db.collection("DashboardLogin");
-    return await collection.find({}).limit(1).toArray();
+    debugger;
+    return await collection.find().limit(1).toArray();
   }
 }
