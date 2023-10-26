@@ -1,6 +1,6 @@
-# Module Initialization
+# Function Initialization
 
-This repository contains code for initializing and running modules using Node.js and MongoDB.
+This repository contains code for running functions using Node.js and MongoDB.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ Before running the code, make sure to set up your environment and install the re
 
    ```bash
    git clone <repository-url>
-   cd module-initialization
+   cd <repo-name>
 
 2. Install dependencies:
 
@@ -32,18 +32,14 @@ Before running the code, make sure to set up your environment and install the re
    DB_URI=mongodb://localhost:27017
    DB_NAME=your-database-name
 
-### Running the Modules
+### Running the Functions
 
-Before running the modules, you need to import all the modules you want to execute in the src/modules/index.js file. Add
-these modules to the "modules" array.
+Before running the functions, you need to import all the functions you want to execute in the src/functions/index.js
+file. Add
+these functions to the "functions" array.
 
-To run the modules and initialize them, use the following command:
+To run the functions, use the following command:
 
    ```bash
    npm start
    ```
-
-### Module Structure
-
-Each module should extend from the base module class and implement the required methods. The base module class is
-located in the `src/models/BaseModule.js` directory.

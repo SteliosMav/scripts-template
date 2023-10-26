@@ -1,13 +1,13 @@
 import "dotenv/config";
-import { initModules } from "./modules/index.js";
+import { runFunctions } from "./functions/index.js";
 import { connectToDb, closeConnection } from "./lib/mongodb.js";
 
 async function main() {
   // Connect to the server
   const db = await connectToDb();
 
-  // Initialize all modules
-  await initModules({ db });
+  // Initialize all functions
+  await runFunctions({ db });
 
   return "## Done. \n";
 }
