@@ -1,6 +1,6 @@
 import { getUsers } from "./getUsers.js";
 
-// Here we import all functions that we want to run
+// Here we import all scripts that we want to run
 const scripts = [getUsers, getUsers];
 
 export async function runFunctions({ db }) {
