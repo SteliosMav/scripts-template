@@ -1,6 +1,6 @@
-# Function Initialization
+# Script Initialization
 
-This repository contains code for running functions using Node.js and MongoDB.
+This repository contains code for running scripts using Node.js and MongoDB.
 
 ## Getting Started
 
@@ -34,11 +34,11 @@ Before running the code, make sure to set up your environment and install the re
 
 ### Running the Functions
 
-Before running the functions, you need to import all the functions you want to execute in the src/functions/index.js
+Before running the scripts, you need to import all the scripts you want to execute in the src/scripts/index.js
 file. Add
-these functions to the "functions" array.
+these scripts to the "scripts" array.
 
-To run the functions, use the following command:
+To run the scripts, use the following command:
 
    ```bash
    npm start
