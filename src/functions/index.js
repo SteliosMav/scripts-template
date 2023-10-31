@@ -13,7 +13,7 @@ export async function runFunctions({ db }) {
     
 ## Running ${fnName}...`);
     const fnResponse = await fn({ db });
-    console.log(`${fnName} response: `, fnResponse);
+    if (fnResponse) console.log(`${fnName} response: `, fnResponse);
     console.log(`${fnName} done.`);
     if (isLastFn)
       console.log(`
