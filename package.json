@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "start:log": "node src/main.js > exported_data/default_process_log.txt"
   },
   "keywords": [],
   "author": "",

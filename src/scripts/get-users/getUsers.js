@@ -1,4 +1,4 @@
-import { exportCsv } from "../lib/export-csv.js";
+import { exportCsv } from "../../lib/export-csv.js";
 
 export async function getUsers({ db }) {
   const collection = db.collection("DashboardLogin");

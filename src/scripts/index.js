@@ -1,4 +1,4 @@
-import { getUsers } from "./getUsers.js";
+import { getUsers } from "./get-users/getUsers.js";
 import { formatText } from "./get-users-by-product-purchase/formatText.js";
 import { getUsersByProductPurchase } from "./get-users-by-product-purchase/getUsersByProductPurchase.js";
 import { assignedAndUsedCoupons } from "./assigned-and-used-coupons/assignedAndUsedCoupons.js";
@@ -14,10 +14,12 @@ export async function runFunctions({ db }) {
     console.log(`
 ----------------------------------------
     
-## Running ${fnName}...`);
+## Running ${fnName}...
+`);
     const fnResponse = await fn({ db });
     if (fnResponse) console.log(`${fnName} response: `, fnResponse);
-    console.log(`${fnName} done.`);
+    console.log(`
+${fnName} done.`);
     if (isLastFn)
       console.log(`
 ----------------------------------------
