@@ -1,10 +1,8 @@
-import { getUsers } from "./get-users/getUsers.js";
-import { formatText } from "./get-users-by-product-purchase/formatText.js";
-import { getUsersByProductPurchase } from "./get-users-by-product-purchase/getUsersByProductPurchase.js";
-import { assignedAndUsedCoupons } from "./assigned-and-used-coupons/assignedAndUsedCoupons.js";
+import { usersByProductBrand } from "./users/by-product-brand/usersByProductBrand.js";
+import { getUsersByProductCategory } from "./users/by-product-category/getUsersByProductCategory.js";
 
 // Here we import all scripts that we want to run
-const scripts = [assignedAndUsedCoupons];
+const scripts = [getUsersByProductCategory];
 
 export async function runFunctions({ db }) {
   for (let i = 0; i < scripts.length; i++) {
