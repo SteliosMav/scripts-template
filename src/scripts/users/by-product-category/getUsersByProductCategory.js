@@ -27,7 +27,6 @@ export async function getUsersByProductCategory({ db }) {
     startDate.setMonth(currentDate.getMonth() - monthsToSubtract);
     const endDate = new Date(startDate);
     endDate.setMonth(startDate.getMonth() + monthsToAdd);
-    // console.log(startDate, endDate);
 
     promises.push(
       _getPetShopOrderIds({
@@ -52,17 +51,14 @@ export async function getUsersByProductCategory({ db }) {
   const promisesResult = await Promise.all(promises);
   console.log("PromisesResult: ", new Date().toJSON(), promisesResult);
 
-  // SHOULD HAVE USED LODASH'S FLATTEN INSTEAD OF CONCAT APPLY
-  const orderIds = Array.prototype.concat.apply([], promisesResult);
-  console.log("orderIds: ", orderIds);
-
-  const uniqueOrderIds = _.uniq(orderIds);
-  console.log("orderIds after uniqueBy: ", uniqueOrderIds);
-
+  const duplicateOrderIds = _.flatten(promisesResult);
+  const uniqueOrderIds = _.uniq(duplicateOrderIds);
   const orderIdsChunks = _.chunk(uniqueOrderIds, 10000);
+
   const getUsersByOrderIdsPromises = orderIdsChunks.map((orderIdsChunk) => {
     return _getUsersByOrderIds({ db, orderIds: orderIdsChunk });
   });
+
   console.log("Start: getUsersByOrderIdsPromises: ", new Date().toJSON());
   const usersChunks = await Promise.all(getUsersByOrderIdsPromises);
   console.log(
@@ -71,14 +67,13 @@ export async function getUsersByProductCategory({ db }) {
     usersChunks,
   );
 
-  const duplicateUsers = Array.prototype.concat.apply([], usersChunks);
+  const duplicateUsers = _.flatten(usersChunks);
   console.log("Users count before unique: ", duplicateUsers.length);
   const uniqueUsers = _.uniqBy(duplicateUsers, (user) => user._id);
   console.log("Users count after unique: ", uniqueUsers.length);
-  const users = uniqueUsers;
 
-  WriteFile.JSON(users, "users-by-product-category.json");
-  WriteFile.CSV(users, "users-by-product-category.csv");
+  WriteFile.JSON(uniqueUsers, "users-by-product-category.json");
+  WriteFile.CSV(uniqueUsers, "users-by-product-category.csv");
 
-  return users;
+  return uniqueUsers;
 }
