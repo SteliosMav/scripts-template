@@ -1,6 +1,7 @@
 export async function _getSuperMarketOrderIds({
   db,
   dateGte,
+  dateLte,
   superMarketClientIds,
   productPointers,
 }) {
@@ -8,8 +9,6 @@ export async function _getSuperMarketOrderIds({
     .collection("OrderItem")
     .aggregate(
       [
-        // { $sort: { _created_at: -1 } },
-        // { $limit: 1000 },
         {
           $match: {
             status: "packaged",
@@ -24,6 +23,7 @@ export async function _getSuperMarketOrderIds({
             },
             _created_at: {
               $gte: dateGte,
+              $lte: dateLte,
             },
           },
         },

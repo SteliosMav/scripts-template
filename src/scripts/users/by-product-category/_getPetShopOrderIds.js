@@ -1,10 +1,13 @@
-export async function _getPetShopOrderIds({ db, dateGte, petShopClientIds }) {
+export async function _getPetShopOrderIds({
+  db,
+  dateGte,
+  dateLte,
+  petShopClientIds,
+}) {
   const orderItemsRes = await db
     .collection("OrderItem")
     .aggregate(
       [
-        // { $sort: { _created_at: -1 } },
-        // { $limit: 1000 },
         {
           $match: {
             status: "packaged",
@@ -16,6 +19,7 @@ export async function _getPetShopOrderIds({ db, dateGte, petShopClientIds }) {
             },
             _created_at: {
               $gte: dateGte,
+              $lte: dateLte,
             },
           },
         },

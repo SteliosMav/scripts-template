@@ -16,25 +16,48 @@ export async function getUsersByProductCategory({ db }) {
     ]);
 
   const currentDate = new Date();
-  const sixMonthsAgoDate = new Date(
-    currentDate.setMonth(currentDate.getMonth() - 6),
-  );
 
-  const [petShopOrderIds, superMarketOrderIds] = await Promise.all([
-    _getPetShopOrderIds({ db, dateGte: sixMonthsAgoDate, petShopClientIds }),
-    _getSuperMarketOrderIds({
-      db,
-      dateGte: sixMonthsAgoDate,
-      superMarketClientIds,
-      productPointers,
-    }),
-  ]);
-  const orderIds = [...petShopOrderIds, ...superMarketOrderIds];
+  const promises = [];
 
-  const users = await _getUsersByOrderIds({ db, orderIds });
+  for (let i = 0; i < 6; i++) {
+    const monthsToSubtract = i + 1;
+    const monthsToAdd = 1;
 
-  WriteFile.JSON(users, "index.json");
-  WriteFile.CSV(users, "index.csv");
+    const startDate = new Date(currentDate);
+    startDate.setMonth(currentDate.getMonth() - monthsToSubtract);
+    const endDate = new Date(startDate);
+    endDate.setMonth(startDate.getMonth() + monthsToAdd),
+      console.log(startDate, endDate);
 
-  return users;
+    promises.push(
+      _getPetShopOrderIds({
+        db,
+        dateGte: startDate,
+        dateLte: endDate,
+        petShopClientIds,
+      }),
+    );
+    promises.push(
+      _getSuperMarketOrderIds({
+        db,
+        dateGte: startDate,
+        dateLte: endDate,
+        superMarketClientIds,
+        productPointers,
+      }),
+    );
+  }
+
+  const promisesResult = await Promise.all(promises);
+
+  console.log(promisesResult);
+
+  // const orderIds = [...petShopOrderIds, ...superMarketOrderIds];
+  //
+  // const users = await _getUsersByOrderIds({ db, orderIds });
+  //
+  // WriteFile.JSON(users, "index.json");
+  // WriteFile.CSV(users, "index.csv");
+  //
+  // return users;
 }
