@@ -1,3 +1,8 @@
+// NOTE:
+//
+// SHOULD HAVE FETCHED ORDERS DIRECTLY INSTEAD OF ORDER ITEMS SINCE ORDERS
+// DO HAVE CLIENTS ON THEM
+
 export async function _getPetShopOrderIds({
   db,
   dateGte,
@@ -29,6 +34,7 @@ export async function _getPetShopOrderIds({
             orderId: "$order",
           },
         },
+        // { $limit: 10 },
       ],
       {
         allowDiskUse: false,

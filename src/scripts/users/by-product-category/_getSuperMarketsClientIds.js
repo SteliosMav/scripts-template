@@ -6,9 +6,7 @@ export async function _getSuperMarketClientIds({ db }) {
     .aggregate([
       {
         $match: {
-          businessTypeIdsArray: {
-            $elemMatch: { $eq: superMarketsBusinessTypeId },
-          },
+          businessTypeIdsArray: superMarketsBusinessTypeId,
         },
       },
       {

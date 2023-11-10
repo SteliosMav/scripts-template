@@ -11,7 +11,6 @@ export async function _getSuperMarketOrderIds({
       [
         {
           $match: {
-            status: "packaged",
             client: {
               $in: superMarketClientIds,
             },
@@ -25,6 +24,7 @@ export async function _getSuperMarketOrderIds({
               $gte: dateGte,
               $lte: dateLte,
             },
+            status: "packaged",
           },
         },
         {
@@ -33,6 +33,7 @@ export async function _getSuperMarketOrderIds({
             orderId: "$order",
           },
         },
+        // { $limit: 10 },
       ],
       {
         allowDiskUse: false,

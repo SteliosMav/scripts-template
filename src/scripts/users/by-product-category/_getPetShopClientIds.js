@@ -6,7 +6,7 @@ export async function _getPetShopClientIds({ db }) {
     .aggregate([
       {
         $match: {
-          businessTypeIdsArray: { $elemMatch: { $eq: petShopsBusinessTypeId } },
+          businessTypeIdsArray: petShopsBusinessTypeId,
         },
       },
       {

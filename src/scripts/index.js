@@ -1,4 +1,3 @@
-import { usersByProductBrand } from "./users/by-product-brand/usersByProductBrand.js";
 import { getUsersByProductCategory } from "./users/by-product-category/getUsersByProductCategory.js";
 
 // Here we import all scripts that we want to run
