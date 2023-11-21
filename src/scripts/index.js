@@ -1,8 +1,7 @@
-import { getUsersByProductCategory } from "./users/by-product-category/getUsersByProductCategory.js";
-import { getOrdersByDate } from "./orders/by-date/getOrdersByDate.js";
+import { getBarcodesByClientAreas } from "./barcodes/by-client-areas/getBarcodesByClientAreas.js";
 
 // Here we import all scripts that we want to run
-const scripts = [getOrdersByDate];
+const scripts = [getBarcodesByClientAreas];
 
 export async function runFunctions({ db }) {
   for (let i = 0; i < scripts.length; i++) {
