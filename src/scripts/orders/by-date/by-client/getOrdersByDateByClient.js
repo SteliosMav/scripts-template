@@ -41,7 +41,7 @@ export async function getOrdersByDateByClient({ db }) {
 }
 
 function _getDruidQueryByClientIds({ clientIds }) {
-  const clientIdsString = `'${clientIds.join("', '")}'`;
+  const clientIdsString = druidHelper.getArrayAsString(clientIds);
   return {
     query: `
             SELECT clientId, createdAtTs, orderCode, orderNumericId
