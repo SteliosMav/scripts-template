@@ -1,27 +1,8 @@
-import { DruidHelper } from "../../../lib/druid.js";
+import { DruidHelper } from "../../../../lib/druid.js";
 import _ from "lodash";
+import { WriteFile } from "../../../../lib/write-file.js";
 
 const druidHelper = new DruidHelper();
-
-// ProductSales
-
-// const druidQuery = {
-//   query: `
-//             SELECT orderId, amountPayableInternal FROM "OrdersSales"
-//             WHERE status='Completed'
-//             AND __time >= '2023-10-01' AND __time < '2023-11-01'
-//             AND countryId = 'ryFmc6ACd1'
-//             AND testClient !='true'
-//             LIMIT 1000
-//             `,
-// };
-//
-// const testQuery = {
-//   query: `
-//     SELECT * FROM "OrdersSales"
-//     LIMIT 1
-// `,
-// };
 
 const druidQuery = {
   query: `
@@ -42,10 +23,12 @@ const druidQuery = {
 `,
 };
 
-export async function getOrdersByDate_Druid({ db }) {
+export async function getProductsByDateByAreas({ db }) {
   console.time("druid");
   const druidRes = await druidHelper.fetchResultsSQL(druidQuery);
   console.timeEnd("druid");
+
+  return _getProductPerAreaCountMap(druidRes);
 
   const duplicateClientAreaIds = druidRes.map((row) => row.clientAreaId);
   const duplicateProductIds = druidRes.map((row) => row.productId);
@@ -54,45 +37,54 @@ export async function getOrdersByDate_Druid({ db }) {
 
   // Warning! Data coming from druid might not exist in mongo due to data sync issues.
   // Deleted documents in mongo will not be deleted in druid.
-  const [clientAreasDictionary, productsDictionary] = await Promise.all([
-    _getClientAreasDictionary({ db, clientAreaIds: uniqueClientAreaIds }),
-    _getProductsDictionary({ db, productIds: uniqueProductIds }),
+  const [clientAreasMap, productsMap] = await Promise.all([
+    _getClientAreasMap({ db, clientAreaIds: uniqueClientAreaIds }),
+    _getProductsMap({ db, productIds: uniqueProductIds }),
   ]);
 
-  // dataDictionary or dataMap
-  const data = {};
+  const formattedData = _formatDruidResponse({
+    druidRes,
+    clientAreasMap,
+    productsMap,
+  });
+
+  WriteFile.CSV(formattedData, "products-by-areas.csv");
+}
+
+const _formatDruidResponse = ({ druidRes, clientAreasMap, productsMap }) => {
+  const dataMap = new Map();
 
   for (const row of druidRes) {
-    const el = data[row.clientAreaId];
+    const el = dataMap.get(row.clientAreaId);
+
     if (el) {
-      const product = productsDictionary[row.productId];
+      const product = productsMap.get(row.productId);
+
       // Data from druid might not exist in mongo due to data sync issues.
-      if (!product) {
-        continue;
-      }
+      if (!product) continue;
+
       el.barcodes.push(product.barcode);
     } else {
-      data[row.clientAreaId] = {};
-      const newEl = data[row.clientAreaId];
-      const client = clientAreasDictionary[row.clientAreaId];
-      const product = productsDictionary[row.productId];
+      const newEl = {
+        clientAreaName: "",
+        barcodes: [],
+      };
+      const client = clientAreasMap.get(row.clientAreaId);
+      const product = productsMap.get(row.productId);
+
       // Data from druid might not exist in mongo due to data sync issues.
-      if (!client || !product) {
-        continue;
-      }
+      if (!client || !product) continue;
+
       newEl.clientAreaName = client.name;
-      newEl.barcodes = [product.barcode];
+      newEl.barcodes.push(product.barcode);
+      dataMap.set(row.clientAreaId, newEl);
     }
   }
 
-  const dataArr = Object.values(data);
+  return Array.from(dataMap.values());
+};
 
-  console.log("dataArr.length", dataArr.length);
-
-  // return dataArr;
-}
-
-const _getClientAreasDictionary = async ({ db, clientAreaIds }) => {
+const _getClientAreasMap = async ({ db, clientAreaIds }) => {
   const clientAreasRes = await db
     .collection("ClientArea")
     .aggregate([
@@ -107,19 +99,16 @@ const _getClientAreasDictionary = async ({ db, clientAreaIds }) => {
     ])
     .toArray();
 
-  const dictionary = {};
+  const map = new Map();
 
   for (const row of clientAreasRes) {
-    dictionary[row._id] = {
-      _id: row._id,
-      name: row.name,
-    };
+    map.set(row._id, { ...row });
   }
 
-  return dictionary;
+  return map;
 };
 
-const _getProductsDictionary = async ({ db, productIds }) => {
+const _getProductsMap = async ({ db, productIds }) => {
   const productsRes = await db
     .collection("Products")
     .aggregate([
@@ -134,14 +123,11 @@ const _getProductsDictionary = async ({ db, productIds }) => {
     ])
     .toArray();
 
-  const dictionary = {};
+  const map = new Map();
 
   for (const row of productsRes) {
-    dictionary[row._id] = {
-      _id: row._id,
-      barcode: row.barcode,
-    };
+    map.set(row._id, { ...row });
   }
 
-  return dictionary;
+  return map;
 };
