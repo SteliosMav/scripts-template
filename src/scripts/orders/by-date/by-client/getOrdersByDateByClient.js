@@ -35,7 +35,7 @@ export async function getOrdersByDateByClient({ db }) {
   );
   flattenedData.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
-  WriteFile.CSV(flattenedData, "2023_11_22_orders-by-date-by-client.csv");
+  WriteFile.CSV(flattenedData, "2023_11_22_orders-by-date-by-client_2.csv");
 
   return flattenedData.length;
 }
@@ -47,7 +47,7 @@ function _getDruidQueryByClientIds({ clientIds }) {
             SELECT clientId, createdAtTs, orderCode, orderNumericId
             FROM "OrdersSales"
             WHERE status ='Completed'
-            AND __time >= '2023-10-12' AND __time <= '2023-11-12'
+            AND __time >= '2023-10-13' AND __time <= '2023-11-12'
             AND testClient !='true'
             AND clientId IN (${clientIdsString})
 `,
@@ -58,7 +58,11 @@ async function _getClientsMap({ db }) {
   const clientsRes = await db
     .collection("Clients")
     .aggregate([
-      { $match: { displayName: "Organic Foods & Cafe" } },
+      {
+        $match: {
+          name: "Fresh Sandouk - Ras Al Khor",
+        },
+      },
       { $project: { name: 1 } },
     ])
     .toArray();
