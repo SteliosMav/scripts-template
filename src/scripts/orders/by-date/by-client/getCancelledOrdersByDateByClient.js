@@ -1,9 +1,6 @@
-import { DruidHelper } from "../../../../lib/druid.js";
 import { WriteFile } from "../../../../lib/write-file.js";
 
-const druidHelper = new DruidHelper();
-
-export async function getCancelledOrdersByDateByClient({ db }) {
+export async function getCancelledOrdersByDateByClient({ db, druidHelper }) {
   const clientsMap = await _getClientsMap({ db });
 
   const clientIds = [...clientsMap.keys()];

@@ -1,79 +1,114 @@
 import { WriteFile } from "../../../lib/write-file.js";
-import { _getUsersByOrderIds } from "./_getUsersByOrderIds.js";
-import { _getPetShopClientIds } from "./_getPetShopClientIds.js";
-import { _getSuperMarketClientIds } from "./_getSuperMarketsClientIds.js";
-import { _getProductPointers } from "./_getProductPointers.js";
-import { _getPetShopOrderIds } from "./_getPetShopOrderIds.js";
-import { _getSuperMarketOrderIds } from "./_getSuperMarketOrderIds.js";
 import _ from "lodash";
 
-export async function getUsersByProductCategory({ db }) {
-  const [petShopClientIds, superMarketClientIds, productPointers] =
-    await Promise.all([
-      _getPetShopClientIds({ db }),
-      _getSuperMarketClientIds({ db }),
-      _getProductPointers({ db }),
-    ]);
+const greeceSId = "mSkwRgn6gt";
 
-  const currentDate = new Date();
+const _getDruidQuery = ({ categoryIds, druidHelper }) => {
+  const sqlArr = druidHelper.getArrayAsString(categoryIds);
+  return {
+    query: `
+            SELECT userId
+            FROM "ProductsSales"
+            WHERE __time >= '2023-10-23' AND __time < '2023-11-23'
+            AND substituteFor = ''
+            AND orderStatus = 'Completed'
+            AND productStatus = 'packaged'
+            AND countryId = '${greeceSId}'
+            AND categoryId IN (${sqlArr})
+`,
+  };
+};
 
-  const promises = [];
+export async function getUsersByProductCategory({ db, druidHelper }) {
+  const categories = await _getCategories({ db });
+  const categoryIds = categories.map((category) => category.categoryId);
+  const druidQuery = _getDruidQuery({ categoryIds, druidHelper });
+  const druidRes = await druidHelper.fetchResultsSQL(druidQuery);
+  const duplicateUserIds = druidRes.map((row) => row.userId);
+  const uniqueUserIds = _.uniq(duplicateUserIds);
 
-  for (let i = 0; i < 6; i++) {
-    const monthsToSubtract = i + 1;
-    const monthsToAdd = 1;
+  console.log("duplicateUserIds", duplicateUserIds.length);
+  console.log("uniqueUserIds", uniqueUserIds.length);
 
-    const startDate = new Date(currentDate);
-    startDate.setMonth(currentDate.getMonth() - monthsToSubtract);
-    const endDate = new Date(startDate);
-    endDate.setMonth(startDate.getMonth() + monthsToAdd);
+  const users = await _getUsersByIds({ db, userIds: uniqueUserIds });
 
-    promises.push(
-      _getPetShopOrderIds({
-        db,
-        dateGte: startDate,
-        dateLte: endDate,
-        petShopClientIds,
-      }),
-    );
-    promises.push(
-      _getSuperMarketOrderIds({
-        db,
-        dateGte: startDate,
-        dateLte: endDate,
-        superMarketClientIds,
-        productPointers,
-      }),
-    );
-  }
-
-  console.log("Fetching orderIds...", new Date().toJSON());
-  const promisesResult = await Promise.all(promises);
-  console.log("PromisesResult: ", new Date().toJSON(), promisesResult);
-
-  const duplicateOrderIds = _.flatten(promisesResult);
-  const uniqueOrderIds = _.uniq(duplicateOrderIds);
-  const orderIdsChunks = _.chunk(uniqueOrderIds, 10000);
-
-  const getUsersByOrderIdsPromises = orderIdsChunks.map((orderIdsChunk) => {
-    return _getUsersByOrderIds({ db, orderIds: orderIdsChunk });
-  });
-
-  console.log("Start: getUsersByOrderIdsPromises: ", new Date().toJSON());
-  const usersChunks = await Promise.all(getUsersByOrderIdsPromises);
-  console.log(
-    "Finish: getUsersByOrderIdsPromises: ",
-    new Date().toJSON(),
-    usersChunks,
-  );
-
-  const duplicateUsers = _.flatten(usersChunks);
-  console.log("Users count before unique: ", duplicateUsers.length);
-  const uniqueUsers = _.uniqBy(duplicateUsers, (user) => user._id);
-  console.log("Users count after unique: ", uniqueUsers.length);
-
-  WriteFile.JSON(uniqueUsers, "users-by-product-category.json");
-  WriteFile.CSV(uniqueUsers, "users-by-product-category.csv");
-
-  return uniqueUsers;
+  WriteFile.CSV(users, "2023_11_23_users-by-product-category.csv");
+  return users.length;
 }
+
+const _getCategories = async ({ db }) => {
+  const categories = await db
+    .collection("BusinessType")
+    .aggregate(
+      [
+        {
+          $match: {
+            title: {
+              $in: ["Supermarkets", "Pet Shops"],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            businessType: "$title",
+            businessTypePointer: {
+              $concat: ["BusinessType$", "$_id"],
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "Categories",
+            let: {
+              businessTypePointer: "$businessTypePointer",
+            },
+            pipeline: [
+              {
+                $match: {
+                  title: /.*Pet.*/,
+                  $expr: {
+                    $eq: ["$_p_businessType", "$$businessTypePointer"],
+                  },
+                },
+              },
+              {
+                $project: {
+                  title: 1,
+                },
+              },
+            ],
+            as: "categories",
+          },
+        },
+        {
+          $unwind: {
+            path: "$categories",
+          },
+        },
+        {
+          $project: {
+            businessType: 1,
+            categoryId: "$categories._id",
+            categoryName: "$categories.title",
+          },
+        },
+      ],
+      {
+        allowDiskUse: false,
+      },
+    )
+    .toArray();
+
+  return categories;
+};
+
+const _getUsersByIds = async ({ db, userIds }) => {
+  return db
+    .collection("_User")
+    .aggregate([
+      { $match: { _id: { $in: userIds } } },
+      { $project: { email: "$unverifiedEmail" } },
+    ])
+    .toArray();
+};
