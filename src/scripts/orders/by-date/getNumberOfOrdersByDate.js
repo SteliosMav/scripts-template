@@ -6,18 +6,18 @@ const druidHelper = new DruidHelper();
 
 const druidQuery = {
   query: `
-    SELECT instashopPicker  
-    FROM "OrdersSales"
-    WHERE "__time" >= '2023-10-01' AND "__time" < '2023-11-01'
+    SELECT __time  FROM "OrdersSales"
+    WHERE "__time" >= '2023-4-01' 
+    AND "__time" < '2023-10-01'
     AND status = 'Completed'
-    AND countryId = 'ryFmc6ACd1'
-    AND businessTypeId = 'hJqhTfUKxl'
-    AND orderWeightGrams > 0
+    AND countryId = 'mSkwRgn6gt'
+    AND EXTRACT(HOUR FROM "__time") = 18
 `,
 };
 
 export async function getNumberOfOrdersByDate({ db }) {
   const druidRes = await druidHelper.fetchResultsSQL(druidQuery);
+  return druidRes.length;
   const results = {
     numberOfOrders: 0,
     ordersPickedByInstaShop: 0,
