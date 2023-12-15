@@ -1,7 +1,10 @@
 import { getDeliveryDetailsByProductBarcodes } from "./delivery-details/by-product-barcodes/getDeliveryDetailsByProductBarcodes.js";
+import { getCancelledOrdersDueToWrongPricing } from "./orders/by-date/getCancelledOrdersDueToWrongPricing.js";
+import { getUsersByProductCategory2 } from "./users/by-product-category/getUsersByProductCategory2.js";
+import { getUsersByCompanyPurchase } from "./users/by-company-purchase/getUsersByCompanyPurchase.js";
 
 // Here we import all scripts that we want to run
-const scripts = [getDeliveryDetailsByProductBarcodes];
+const scripts = [getUsersByCompanyPurchase];
 
 export async function runFunctions({ db, druidHelper }) {
   for (let i = 0; i < scripts.length; i++) {

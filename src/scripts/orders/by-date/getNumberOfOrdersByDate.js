@@ -7,7 +7,7 @@ const druidHelper = new DruidHelper();
 const druidQuery = {
   query: `
     SELECT __time  FROM "OrdersSales"
-    WHERE "__time" >= '2023-4-01' 
+    WHERE "__time" >= '2023-4-01'
     AND "__time" < '2023-10-01'
     AND status = 'Completed'
     AND countryId = 'mSkwRgn6gt'
@@ -17,7 +17,7 @@ const druidQuery = {
 
 export async function getNumberOfOrdersByDate({ db }) {
   const druidRes = await druidHelper.fetchResultsSQL(druidQuery);
-  return druidRes.length;
+
   const results = {
     numberOfOrders: 0,
     ordersPickedByInstaShop: 0,
