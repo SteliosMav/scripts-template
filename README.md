@@ -34,7 +34,7 @@ Before running the code, make sure to set up your environment and install the re
 
 ### Running the Functions
 
-Before running the scripts, you need to import all the scripts you want to execute in the src/scripts/index.js
+Before running the scripts, you need to import all the scripts you want to execute in the src/scripts/scripts.js
 file. Add
 these scripts to the "scripts" array.
 

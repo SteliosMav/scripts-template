@@ -19,7 +19,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mongodb": "3.6.0",
-    "parse": "1.9.1",
+    "parse": "^1.9.1",
     "read-excel-file": "^5.7.1",
     "request": "^2.88.2"
   }
