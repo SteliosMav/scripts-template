@@ -7,10 +7,16 @@ import { getUsersByProductSKUPurchase } from "./users/product-purchase/getUsersB
 import { getActiveUsersWithoutOrderLastMonth } from "./users/product-purchase/getActiveUsersWithoutOrderLastMonth.js";
 import { getOrdersByCampaignCoupon } from "./orders/by-campaign-coupon/getOrdersByCampaignCoupon.js";
 import { generateCoupons } from "./generate-coupons/generateCoupons.js";
-import { test } from "./miscellaneous/test.js";
+import { clientsByCategoryBySubcategory } from "./clients/clientsByCategoryBySubcategory.js";
+import { test } from "./test.js";
+import { generateCoupons2 } from "./generate-coupons/generateCoupons2.js";
+import { orderFrequencyOfUsersFirst5orders } from "./orders/by-frequency/orderFrequencyOfUsersFirst5orders.js";
+import { getUsersByProductSKUPurchase2 } from "./users/product-purchase/getUsersByProductSKUPurchase2.js";
+import { daysPastFromInstallationAfterFirstOrder } from "./orders/by-frequency/daysPastFromInstallationAfterFirstOrder.js";
+import { getUsersByOrderComment } from "./users/by-order-comment/getUsersByOrderComment.js";
 
 // Here we import all scripts that we want to run
-const scripts = [test];
+const scripts = [getUsersByOrderComment];
 
 export async function runFunctions({ db, druidHelper, Parse }) {
   for (let i = 0; i < scripts.length; i++) {
