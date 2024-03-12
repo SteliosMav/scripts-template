@@ -77,7 +77,7 @@ function _validateCustomCodeUniqueness(coupons) {
 }
 
 function _generateCustomCode() {
-  const randomCustomCode = _generateRandomString(4);
+  const randomCustomCode = _generateRandomString(6);
   const prefixedCustomCode = `FitFam_${randomCustomCode}`;
   return prefixedCustomCode;
 }

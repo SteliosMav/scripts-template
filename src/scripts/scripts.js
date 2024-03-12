@@ -14,9 +14,11 @@ import { orderFrequencyOfUsersFirst5orders } from "./orders/by-frequency/orderFr
 import { getUsersByProductSKUPurchase2 } from "./users/product-purchase/getUsersByProductSKUPurchase2.js";
 import { daysPastFromInstallationAfterFirstOrder } from "./orders/by-frequency/daysPastFromInstallationAfterFirstOrder.js";
 import { getUsersByOrderComment } from "./users/by-order-comment/getUsersByOrderComment.js";
+import { getClientCampaigns } from "./client-campaigns/getClientCampaigns.js";
+import { getCouponRedemptionReport3 } from "./coupon-redemption/getCouponRedemptionReport3.js";
 
 // Here we import all scripts that we want to run
-const scripts = [getUsersByOrderComment];
+const scripts = [getCouponRedemptionReport3];
 
 export async function runFunctions({ db, druidHelper, Parse }) {
   for (let i = 0; i < scripts.length; i++) {

@@ -4,9 +4,9 @@ const egyptSId = "vrii93Zwoj";
 
 export async function generateCoupons({ db, druidHelper, Parse }) {
   // Set constants
-  const numberOfDocuments = 37;
-  const expireDate = new Date(2024, 11, 31);
-  const couponValue = 600 / 5;
+  const numberOfDocuments = 150;
+  const expireDate = new Date(2024, 2, 15);
+  const couponValue = 150 / 5;
   const coupons = [];
 
   // Fetch the country
@@ -21,13 +21,13 @@ export async function generateCoupons({ db, druidHelper, Parse }) {
     coupon.set("issuedCountry", egyptCountry);
     coupon.set("useCount", 0);
     coupon.set("quantity", 1);
-    coupon.set("createdByName", "dopayPromotion");
-    coupon.set("type", "cashbackCampaign_by_shops");
-    coupon.set("shopsPay", true);
+    coupon.set("createdByName", "rahetBallyPromotion");
+    coupon.set("type", "cashbackCampaign_by_instashop");
+    coupon.set("shopsPay", false);
     coupon.set("reason", "Promotion");
     coupon.set("identifier", "promotion");
     coupon.set("value", couponValue); // EGP
-    coupon.set("reasonFreeText", "dopayPromotion");
+    coupon.set("reasonFreeText", "rahetBallyPromotion");
     coupon.set("customCode", _generateCustomCode());
     coupons.push(coupon);
   }
@@ -42,10 +42,10 @@ export async function generateCoupons({ db, druidHelper, Parse }) {
   _validateCustomCodeUniqueness(coupons);
 
   // Export the coupons to CSV
-  // WriteFile.CSV(couponsCsv, "2024_01_25_dopay_coupons.csv");
+  WriteFile.CSV(couponsCsv, "2024_02_26_rahet_bally_coupons_150x150EGP.csv");
 
   // Save the coupons
-  // await Parse.Object.saveAll(coupons, { useMasterKey: true });
+  await Parse.Object.saveAll(coupons, { useMasterKey: true });
 }
 
 function _validateCustomCodeUniqueness(coupons) {
@@ -57,8 +57,8 @@ function _validateCustomCodeUniqueness(coupons) {
 }
 
 function _generateCustomCode() {
-  const randomCustomCode = _generateRandomString(4);
-  const prefixedCustomCode = `dopay_${randomCustomCode}`;
+  const randomCustomCode = _generateRandomString(6);
+  const prefixedCustomCode = `RB_${randomCustomCode}`;
   return prefixedCustomCode;
 }
 
@@ -70,5 +70,5 @@ function _generateRandomString(length) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     result += characters.charAt(randomIndex);
   }
-  return result;
+  return result.toLowerCase();
 }
